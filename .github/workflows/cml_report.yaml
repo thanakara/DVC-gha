@@ -1,0 +1,18 @@
+name: CML
+on: [push]
+jobs:
+  train-and-report:
+    runs-on: ubuntu-latest
+    container: docker://ghcr.io/iterative/cml:0-dvc2-base1
+    steps:
+      - uses: actions/checkout@v3
+      - run: |
+          pip install -r experiments/requirements.txt
+          python experiments/train.py  # generate plot.png
+ 
+          # Create CML report
+          echo '![](./plot.png "Plot")' >> report.md
+          cml comment create report.md
+          
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
